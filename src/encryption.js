@@ -11,14 +11,61 @@ class EncryptedMsg extends React.Component {
         console.log(encryptedTxt);
         let decryptedTxt = Library.decrypt(encryptedTxt, key);
         console.log(decryptedTxt);
+        this.state = {
+            key: key,   
+            encryptedTxt: encryptedTxt,
+            decryptedTxt: decryptedTxt, 
+            showKey: false
+        };
     }
 
     render() {
         return (
             <div className="EncryptedMsg">
-                
+                <button class="ToggleKey" 
+                    onClick={() => this.setState({showKey: !this.state.showKey})}>
+                    {this.state.showKey ? 'Hide encryption key': 'Show encryption key'}
+                </button>
+                {this.state.showKey && 
+                    <input class="EncryptionKey code"
+                        value={this.state.key}
+                        onChange={e => {
+                            this.setState({ key: e.target.value }); 
+                            this.reEncrypt();}}>
+                    </input>
+                }
+                <div className="row">
+                <div className="Encrypt col-sm-12 col-md-10 col-lg-5">
+                    <h2>Encrypted text: </h2>
+                    <textarea className="EncryptedTxt" 
+                        type="text"
+                        value={this.state.encryptedTxt}
+                        onChange={e => {
+                            this.setState({encryptedTxt: e.target.value});
+                            this.reDecrypt();}}>
+                    </textarea>
+                </div>
+                <div className="Decrypt col-sm-12 col-md-10 col-lg-5">
+                    <h2>Decrypted text: </h2>
+                    <textarea className="DecryptedTxt" 
+                        type="text"
+                        value={this.state.decryptedTxt}
+                        onChange={e => {
+                            this.setState({decryptedTxt: e.target.value});
+                            this.reEncrypt();}}>
+                    </textarea>
+                </div>
+                </div>
             </div>
         );
+    }
+
+    reDecrypt = () => {
+        this.setState(s => ({decryptedTxt: Library.decrypt(s.encryptedTxt, s.key)}))
+    }
+
+    reEncrypt = () => {
+        this.setState(s => ({encryptedTxt: Library.encrypt(s.decryptedTxt, s.key)}))
     }
 }
 
